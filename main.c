@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <math.h>
 
-int main(char *args, char **kwargs) {
-    printf("hoer");
+int main(int nargs, char **args) {
+    printf("hoer\n");
+    return 0;
 }
