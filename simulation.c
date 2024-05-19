@@ -49,3 +49,12 @@ void print_bodies(size_t n, body *bodies) {
         );
     }
 }
+
+void shift_phase(size_t n, body *bodies, v2df shift) {
+    for(int i=0; i<n;i++){
+        float random_phase = rand() * 2 * pi;
+        bodies[i].pos[0] *= cos(random_phase);
+        bodies[i].pos[1] = sin(random_phase) * bodies[i].pos[0];
+        // pos[0] initially stores the orbital radius
+    }
+}
