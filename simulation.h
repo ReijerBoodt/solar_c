@@ -1,0 +1,19 @@
+#include "constants.h"
+
+#include <math.h>
+#include <stdio.h>
+
+// Vector type consisting of two doubles 
+typedef double v2df __attribute__ ((vector_size (16)));
+
+typedef struct body {
+    char *name;
+    double mass;
+    v2df pos;
+    v2df vel;
+} body;
+
+void do_step(size_t n, body *bodies, float dt);
+void print_bodies(size_t n, body *bodies);
+double dist_cubed(v2df a, v2df b);
+v2df calc_interaction_vector(body b1, body b2);
