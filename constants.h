@@ -5,4 +5,5 @@ static float M_earth = 5.9722E24;
 static float M_moon = 7.342E22;
 static float lunar_distance = 3.84399E8;
 static float AU = 1.496E11;
+static float pi = 3.14159265358979323846;
 #endif // CONSTANTS

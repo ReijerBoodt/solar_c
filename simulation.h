@@ -10,6 +10,7 @@ typedef struct body {
     char *name;
     double mass;
     v2df pos;
+    v2df pol;
     v2df vel;
 } body;
 
