@@ -14,6 +14,7 @@ typedef struct body {
 } body;
 
 void do_step(size_t n, body *bodies, float dt);
+void print_bodies_relative(size_t n, body *bodies);
 void print_bodies(size_t n, body *bodies);
 double dist_cubed(v2df a, v2df b);
 v2df calc_interaction_vector(body b1, body b2);

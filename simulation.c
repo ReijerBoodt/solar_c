@@ -29,13 +29,23 @@ void do_step(size_t n, body *bodies, float dt)
     }
 }
 
-void print_bodies(size_t n, body *bodies) {
+void print_bodies_relative(size_t n, body *bodies) {
     puts("Printing relative to body 0.");
     for(int i=0; i<n;i++){
         printf("%s: [%g, %g]\n",
             bodies[i].name,
             (bodies[i].pos - bodies[0].pos)[0],
             (bodies[i].pos - bodies[0].pos)[1]
+        );
+    }
+}
+
+void print_bodies(size_t n, body *bodies) {
+    for(int i=0; i<n;i++){
+        printf("%s: [%g, %g]\n",
+            bodies[i].name,
+            bodies[i].pos[0],
+            bodies[i].pos[1]
         );
     }
 }
