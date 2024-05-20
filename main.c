@@ -66,11 +66,11 @@ void graphics_version(){
             do_step(n, bodies, 60.f);
         }
 
-        if(IsKeyDown(KEY_X)){
-            steps_per_frame *= 1.025f;
+        if(IsKeyPressed(KEY_X)){
+            steps_per_frame *= 1.25f;
         }
-        if(IsKeyDown(KEY_Z)){
-            steps_per_frame /= 1.025f;
+        if(IsKeyPressed(KEY_Z)){
+            steps_per_frame /= 1.25f;
         }
 
         if(IsKeyPressed(KEY_UP)){

@@ -131,11 +131,24 @@ double get_orbital_speed(double parent_mass, double radius) {
 body *get_solar_system () {
     size_t n = sizeof(solar_system) / sizeof(solar_system[0]);
 
+    // Speed around the sun
     for (int i=1; i<n; i++) {
         solar_system[i].vel[1] = get_orbital_speed(
             M_sun, solar_system[i].pos[0]
         );
     }
+
+    // Speed of moons around Jupiter
+    for (int i=7; i<=10; i++) {
+        solar_system[i].vel[0] = get_orbital_speed(
+            M_jupiter, solar_system[i].pos[1]
+        );
+    }
+
+    // Speed of moon around Earth
+    solar_system[2].vel[0] = get_orbital_speed(
+        M_earth, solar_system[2].pos[1]
+    );
 
     return solar_system;
 }
