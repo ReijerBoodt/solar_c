@@ -1,6 +1,6 @@
 CC=gcc
-CFLAGS=--std=gnu17 -Warray-bounds -g
-LDFLAGS=-lm -lraylib
+CFLAGS=--std=gnu17 -Warray-bounds -g -I/opt/homebrew/include
+LDFLAGS=-lm -lraylib -L/opt/homebrew/lib
 OBJECTS=simulation.o main.o
 
 all: main examples/raylib_demo
