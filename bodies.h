@@ -131,20 +131,11 @@ double get_orbital_speed(double parent_mass, double radius) {
 body *get_solar_system () {
     size_t n = sizeof(solar_system) / sizeof(solar_system[0]);
 
-    solar_system[1].vel[1] = get_orbital_speed(
-        sun.mass, AU
-    );
-    solar_system[3].vel[1] = get_orbital_speed(
-        sun.mass, 0.39 * AU
-    );
-
     for (int i=1; i<n; i++) {
         solar_system[i].vel[1] = get_orbital_speed(
             M_sun, solar_system[i].pos[0]
         );
     }
-
-    // solar_system[2].vel[]
 
     return solar_system;
 }

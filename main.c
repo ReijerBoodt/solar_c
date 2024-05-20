@@ -32,7 +32,7 @@ void quick_test_session(){
     print_bodies_relative(2, bodies);
 }
 
-double set_conversion_factor(double *conv, double AU_PER_WINDOW, int WINDOW_WIDTH, int WINDOW_HEIGHT)
+void set_conversion_factor(double *conv, double AU_PER_WINDOW, int WINDOW_WIDTH, int WINDOW_HEIGHT)
 {
     double SIMULATED_WINDOW_WIDTH = AU_PER_WINDOW * AU;
     *conv = WINDOW_WIDTH / SIMULATED_WINDOW_WIDTH;
@@ -55,11 +55,11 @@ void graphics_version(){
     double conversion = 0;
     set_conversion_factor(&conversion, AU_PER_WINDOW, WINDOW_WIDTH, WINDOW_HEIGHT);
 
+    int steps_per_frame = 500;
+    unsigned int selected_body = 0;
+
     InitWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "solar_c (2024)");
-    SetTargetFPS(60);
-
-    int steps_per_frame = 5000;
-
+    SetTargetFPS(165);
     while (!WindowShouldClose())
     {
         for(int i=0; i<steps_per_frame; i++){
@@ -83,13 +83,21 @@ void graphics_version(){
             set_conversion_factor(&conversion, AU_PER_WINDOW, WINDOW_WIDTH, WINDOW_HEIGHT);
         }
 
+        if(IsKeyPressed(KEY_RIGHT)){
+            selected_body = (selected_body + 1)  % n;
+        }
+        if(IsKeyPressed(KEY_LEFT)){
+            selected_body = (selected_body - 1)  % n;
+        }
+
         BeginDrawing();
             ClearBackground(BLACK);
             // DrawText("Congrats! You created your first window!", 190, 200, 20, LIGHTGRAY);
 
             for (int i=0; i<n; i++) {
-                int x = WINDOW_WIDTH/2 + (bodies[i].pos - bodies[0].pos )[0]*conversion;
-                int y = WINDOW_HEIGHT/2 + (bodies[i].pos - bodies[0].pos )[1]*conversion;
+                int x = WINDOW_WIDTH/2 + (bodies[i].pos - bodies[selected_body].pos )[0]*conversion;
+                int y = WINDOW_HEIGHT/2 + (bodies[i].pos - bodies[selected_body].pos )[1]*conversion;
+
                 DrawCircle(x, y, 3.f, RED);
             }
             DrawFPS(10, 10);
