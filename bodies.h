@@ -1,106 +1,105 @@
 // Header file containing objects
 #include "simulation.h"
 
-
-body sun = {
+const body sun = {
     .name = "Sun",
     .mass = M_sun,
     .pos = {0, 0},
     .vel = {0, 0}
 };
 
-body earth = {
+const body earth = {
     .name = "Earth",
     .mass = M_earth,
     .pos = {AU, 0},
     .vel = {0, 0}
 };
 
-body moon = {
+const body moon = {
     .name = "Moon",
     .mass = M_moon,
-    .pos = {lunar_distance, 0},
-    .vel = {0, 1022}
+    .pos = {lunar_distance, AU},
+    .vel = {AU, 1022}
 }; 
 
-body mercury = {
+const body mercury = {
     .name = "Mercury",
     .mass = 0.55 * M_earth,
     .pos = {0.39 * AU, 0},
     .vel = {0, 0}
 };
 
-body venus = {
+const body venus = {
     .name = "Venus",
     .mass = 0.815 * M_earth,
     .pos = {0.72 * AU, 0},
     .vel = {0, 0}
 };
 
-body mars = {
+const body mars = {
     .name = "Mars",
     .mass = 0.107 * M_earth,
     .pos = {1.52 * AU, 0},
     .vel = {0, 0}
 };
 
-body jupiter = {
+const body jupiter = {
     .name = "Jupiter",
     .mass = 317.8 * M_earth,
     .pos = {5.20 * AU, 0},
     .vel = {0, 0}
 };
 
-body io = {
+const body io = {
     .name = "Io",
     .mass = 0.015 * M_earth,
     .pos = {5.20 * AU, 0.0028 * AU},
     .vel = {0, 0}
 };
 
-body europa = {
+const body europa = {
     .name = "Europa",
     .mass = 0.008 * M_earth,
     .pos = {5.20 * AU, 0.0045 * AU},
     .vel = {0, 0}
 };
 
-body ganymede = {
+const body ganymede = {
     .name = "Ganymede",
     .mass = 0.025 * M_earth,
     .pos = {5.20 * AU, 0.0071 * AU},
     .vel = {0, 0}
 };
 
-body callisto = {
+const body callisto = {
     .name = "Callisto",
     .mass = 0.018 * M_earth,
     .pos = {5.20 * AU, 0.0126 * AU},
     .vel = {0, 0}
 };
 
-body saturn = {
+const body saturn = {
     .name = "Saturn",
     .mass = 95.2 * M_earth,
     .pos = {9.58 * AU, 0},
     .vel = {0, 0}
 };
 
-body uranus = {
+const body uranus = {
     .name = "Uranus",
     .mass = 14.5 * M_earth,
     .pos = {19.22 * AU, 0},
     .vel = {0, 0}
 };
 
-body neptune = {
+const body neptune = {
     .name = "Neptune",
     .mass = 17.1 * M_earth,
     .pos = {30.05 * AU, 0},
     .vel = {0, 0}
 };
 
-body pluto = {
+const body pluto = {
     .name = "Pluto",
     .mass = 0.00218 * M_earth,
     .pos = {39.48 * AU, 0},
@@ -124,3 +123,28 @@ body solar_system[] = {
     neptune,
     pluto
 };
+
+double get_orbital_speed(double parent_mass, double radius) {
+    return sqrt(G * parent_mass / radius);
+}
+
+body *get_solar_system () {
+    size_t n = sizeof(solar_system) / sizeof(solar_system[0]);
+
+    solar_system[1].vel[1] = get_orbital_speed(
+        sun.mass, AU
+    );
+    solar_system[3].vel[1] = get_orbital_speed(
+        sun.mass, 0.39 * AU
+    );
+
+    for (int i=1; i<n; i++) {
+        solar_system[i].vel[1] = get_orbital_speed(
+            M_sun, solar_system[i].pos[0]
+        );
+    }
+
+    // solar_system[2].vel[]
+
+    return solar_system;
+}

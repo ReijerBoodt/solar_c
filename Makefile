@@ -1,5 +1,5 @@
 CC=gcc
-CFLAGS=--std=gnu17 -Warray-bounds -g -I/opt/homebrew/include
+CFLAGS=--std=gnu17 -Warray-bounds -g -I/opt/homebrew/include -O3
 LDFLAGS=-lm -lraylib -L/opt/homebrew/lib
 OBJECTS=simulation.o main.o
 
@@ -7,7 +7,7 @@ all: main examples/raylib_demo
 
 main: $(OBJECTS) 
 
-main.o: constants.h main.h
+main.o: constants.h main.h bodies.h
 
 simulation.o: constants.h simulation.h
 

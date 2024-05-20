@@ -1,4 +1,5 @@
 #include "main.h"
+#include "bodies.h"
 // #include ""
 
 void quick_test_session(){
@@ -6,6 +7,8 @@ void quick_test_session(){
         { "earth", M_earth, {0, 0},  {0, 0} },
         { "moon", M_moon, {lunar_distance, 0},  {0, 1022} }
     };
+
+    // body *bodies = get_solar_system();
 
     puts("Before:");
     printf("The distance squared is: %g\n",
@@ -29,48 +32,64 @@ void quick_test_session(){
     print_bodies_relative(2, bodies);
 }
 
+double set_conversion_factor(double *conv, double AU_PER_WINDOW, int WINDOW_WIDTH, int WINDOW_HEIGHT)
+{
+    double SIMULATED_WINDOW_WIDTH = AU_PER_WINDOW * AU;
+    *conv = WINDOW_WIDTH / SIMULATED_WINDOW_WIDTH;
+}
+
 void graphics_version(){
-    int n=2;
-    body bodies[] = {
-        { "earth", M_earth, {0, 0},  {0, 0} },
-        { "moon", M_moon, {lunar_distance, 0},  {0, 200.f} }
-    };
+    // int n=2;
+    // body bodies[] = {
+    //     { "earth", M_earth, {0, 0},  {0, 0} },
+    //     { "moon", M_moon, {lunar_distance, 0},  {0, 200.f} }
+    // };
+    body *bodies = get_solar_system();
+    size_t n = 15;
+
 
     int WINDOW_WIDTH = 1920;
     int WINDOW_HEIGHT = 1080;
 
-    double LD_PER_WINDOW = 6.f;
-    double SIMULATED_WINDOW_WIDTH = LD_PER_WINDOW * lunar_distance;
-    double conversion = WINDOW_WIDTH / SIMULATED_WINDOW_WIDTH;
-
-    // distance / ld * pixels_per_ld
+    double AU_PER_WINDOW = 2.5f;
+    double conversion = 0;
+    set_conversion_factor(&conversion, AU_PER_WINDOW, WINDOW_WIDTH, WINDOW_HEIGHT);
 
     InitWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "solar_c (2024)");
-    SetTargetFPS(600);
+    SetTargetFPS(60);
 
-    int steps_per_frame = 100;
+    int steps_per_frame = 5000;
 
     while (!WindowShouldClose())
     {
         for(int i=0; i<steps_per_frame; i++){
-            do_step(n, bodies, 1.f);
+            do_step(n, bodies, 60.f);
         }
 
-        // if(IsKeyPressed(KEY_Q)) SetWindow
         if(IsKeyDown(KEY_X)){
-            steps_per_frame += 1;
+            steps_per_frame *= 1.025f;
         }
         if(IsKeyDown(KEY_Z)){
-            steps_per_frame -= 1;
+            steps_per_frame /= 1.025f;
+        }
+
+        if(IsKeyPressed(KEY_UP)){
+            AU_PER_WINDOW /= 1.2f;
+            set_conversion_factor(&conversion, AU_PER_WINDOW, WINDOW_WIDTH, WINDOW_HEIGHT);
+        }
+        if(IsKeyPressed(KEY_DOWN)){
+            AU_PER_WINDOW *= 1.2f;
+            printf("%f\n", AU_PER_WINDOW);
+            set_conversion_factor(&conversion, AU_PER_WINDOW, WINDOW_WIDTH, WINDOW_HEIGHT);
         }
 
         BeginDrawing();
-            ClearBackground(RAYWHITE);
+            ClearBackground(BLACK);
             // DrawText("Congrats! You created your first window!", 190, 200, 20, LIGHTGRAY);
 
             for (int i=0; i<n; i++) {
-                int x = WINDOW_WIDTH/2 + bodies[i].pos[0]*conversion;
-                int y = WINDOW_HEIGHT/2 + bodies[i].pos[1]*conversion;
+                int x = WINDOW_WIDTH/2 + (bodies[i].pos - bodies[0].pos )[0]*conversion;
+                int y = WINDOW_HEIGHT/2 + (bodies[i].pos - bodies[0].pos )[1]*conversion;
                 DrawCircle(x, y, 3.f, RED);
             }
             DrawFPS(10, 10);
