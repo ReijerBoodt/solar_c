@@ -97,9 +97,13 @@ void graphics_version(){
             for (int i=0; i<n; i++) {
                 int x = WINDOW_WIDTH/2 + (bodies[i].pos - bodies[selected_body].pos )[0]*conversion;
                 int y = WINDOW_HEIGHT/2 + (bodies[i].pos - bodies[selected_body].pos )[1]*conversion;
-
                 DrawCircle(x, y, 3.f, RED);
             }
+            
+            char *cur_sel_text = malloc(256*sizeof(char));
+            snprintf(cur_sel_text, 256, "Currently tracking: %s", bodies[selected_body].name);
+            DrawText(cur_sel_text, 0, 30, 20, WHITE);
+
             DrawFPS(10, 10);
         EndDrawing();
     }
