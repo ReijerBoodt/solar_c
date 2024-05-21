@@ -48,8 +48,8 @@ void graphics_version(){
     size_t n = 15;
 
 
-    int WINDOW_WIDTH = 1920;
-    int WINDOW_HEIGHT = 1080;
+    int WINDOW_WIDTH = 1200;
+    int WINDOW_HEIGHT = 800;
 
     double AU_PER_WINDOW = 2.5f;
     double conversion = 0;
