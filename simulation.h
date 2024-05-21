@@ -2,6 +2,7 @@
 #define SIMULATION_INCLUDED
 
 #include "constants.h"
+#include "raylib.h"
 
 #include <math.h>
 #include <stdio.h>
@@ -11,6 +12,7 @@ typedef double v2df __attribute__ ((vector_size (16)));
 
 typedef struct body {
     char *name;
+    Color color;
     double mass;
     v2df pos;
     v2df vel;

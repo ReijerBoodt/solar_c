@@ -38,6 +38,10 @@ void set_conversion_factor(double *conv, double AU_PER_WINDOW, int WINDOW_WIDTH,
     *conv = WINDOW_WIDTH / SIMULATED_WINDOW_WIDTH;
 }
 
+bool m_IsKeyPressed(int key) {
+    return IsKeyPressed(key) || IsKeyPressedRepeat(key);
+}
+
 void graphics_version(){
     // int n=2;
     // body bodies[] = {
@@ -48,46 +52,62 @@ void graphics_version(){
     size_t n = 15;
 
 
-    int WINDOW_WIDTH = 1200;
-    int WINDOW_HEIGHT = 800;
+    int WINDOW_WIDTH = 2560;
+    int WINDOW_HEIGHT = 1440;
 
     double AU_PER_WINDOW = 2.5f;
     double conversion = 0;
     set_conversion_factor(&conversion, AU_PER_WINDOW, WINDOW_WIDTH, WINDOW_HEIGHT);
 
-    int steps_per_frame = 500;
+    int steps_per_frame = 5;
     unsigned int selected_body = 0;
+    bool paused = false;
+    double elapsed_time = 0.f;
 
     InitWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "solar_c (2024)");
+    SetWindowState(FLAG_FULLSCREEN_MODE);
     SetTargetFPS(165);
     while (!WindowShouldClose())
     {
-        for(int i=0; i<steps_per_frame; i++){
-            do_step(n, bodies, 60.f);
+        for(int i=0; i<steps_per_frame && !paused; i++){
+            do_step(n, bodies, 60.0);
+            elapsed_time += 60.0;
         }
 
-        if(IsKeyPressed(KEY_X)){
-            steps_per_frame *= 1.25f;
+        if(m_IsKeyPressed(KEY_X)){
+            steps_per_frame *= 1.25;
         }
-        if(IsKeyPressed(KEY_Z)){
-            steps_per_frame /= 1.25f;
+        if(m_IsKeyPressed(KEY_Z)){
+            steps_per_frame /= 1.25;
         }
 
-        if(IsKeyPressed(KEY_UP)){
-            AU_PER_WINDOW /= 1.2f;
+        if(m_IsKeyPressed(KEY_UP)){
+            AU_PER_WINDOW /= 1.2;
             set_conversion_factor(&conversion, AU_PER_WINDOW, WINDOW_WIDTH, WINDOW_HEIGHT);
         }
-        if(IsKeyPressed(KEY_DOWN)){
-            AU_PER_WINDOW *= 1.2f;
+        if(m_IsKeyPressed(KEY_DOWN)){
+            AU_PER_WINDOW *= 1.2;
             printf("%f\n", AU_PER_WINDOW);
             set_conversion_factor(&conversion, AU_PER_WINDOW, WINDOW_WIDTH, WINDOW_HEIGHT);
         }
 
-        if(IsKeyPressed(KEY_RIGHT)){
+        if(m_IsKeyPressed(KEY_RIGHT)){
             selected_body = (selected_body + 1)  % n;
         }
-        if(IsKeyPressed(KEY_LEFT)){
+        if(m_IsKeyPressed(KEY_LEFT)){
             selected_body = (selected_body - 1)  % n;
+        }
+
+        if(m_IsKeyPressed(KEY_SPACE)){
+            paused = !paused;
+        }
+
+        if(m_IsKeyPressed(KEY_ONE) && IsKeyDown(KEY_LEFT_CONTROL)) {
+            if (bodies[0].mass > 0){
+                bodies[0].mass = 0;
+            } else {
+                bodies[0].mass = M_sun;
+            }
         }
 
         BeginDrawing();
@@ -97,12 +117,21 @@ void graphics_version(){
             for (int i=0; i<n; i++) {
                 int x = WINDOW_WIDTH/2 + (bodies[i].pos - bodies[selected_body].pos )[0]*conversion;
                 int y = WINDOW_HEIGHT/2 + (bodies[i].pos - bodies[selected_body].pos )[1]*conversion;
-                DrawCircle(x, y, 3.f, RED);
+                
+                if (x > 0 && x < WINDOW_WIDTH && y > 0 && y<WINDOW_HEIGHT){
+                    DrawCircle(x, y, 3.f, bodies[i].color);
+                }
             }
             
+            // Draw tracked body
             char *cur_sel_text = malloc(256*sizeof(char));
             snprintf(cur_sel_text, 256, "Currently tracking: %s", bodies[selected_body].name);
             DrawText(cur_sel_text, 0, 30, 20, WHITE);
+
+            // Draw elapsed time
+            char *elapsed_time_text = malloc(256*sizeof(char));
+            snprintf(elapsed_time_text, 256, "Elapsed time (days): %08.5e", elapsed_time / (60.0*24.0));
+            DrawText(elapsed_time_text, 0, 60, 20, WHITE);
 
             DrawFPS(10, 10);
         EndDrawing();
