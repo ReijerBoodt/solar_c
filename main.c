@@ -32,9 +32,9 @@ void quick_test_session(){
     print_bodies_relative(2, bodies);
 }
 
-void set_conversion_factor(double *conv, double AU_PER_WINDOW, int WINDOW_WIDTH, int WINDOW_HEIGHT)
+void set_conversion_factor(double *conv, double AU_per_window, int WINDOW_WIDTH, int WINDOW_HEIGHT)
 {
-    double SIMULATED_WINDOW_WIDTH = AU_PER_WINDOW * AU;
+    double SIMULATED_WINDOW_WIDTH = AU_per_window * AU;
     *conv = WINDOW_WIDTH / SIMULATED_WINDOW_WIDTH;
 }
 
@@ -48,25 +48,31 @@ void graphics_version(){
     //     { "earth", M_earth, {0, 0},  {0, 0} },
     //     { "moon", M_moon, {lunar_distance, 0},  {0, 200.f} }
     // };
+
+    // Bodies in the sim
     body *bodies = get_solar_system();
     size_t n = 15;
 
-
-    int WINDOW_WIDTH = 2560;
-    int WINDOW_HEIGHT = 1440;
-
-    double AU_PER_WINDOW = 2.5f;
-    double conversion = 0;
-    set_conversion_factor(&conversion, AU_PER_WINDOW, WINDOW_WIDTH, WINDOW_HEIGHT);
-
+    // Variables governing the sim
     int steps_per_frame = 5;
+    double AU_per_window = 2.5f;
     unsigned int selected_body = 0;
     bool paused = false;
     double elapsed_time = 0.f;
 
+    // Window initialization, rendering necessities
+    int WINDOW_WIDTH = 1200;
+    int WINDOW_HEIGHT = 800;
     InitWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "solar_c (2024)");
+    WINDOW_WIDTH = GetMonitorWidth(GetCurrentMonitor());
+    WINDOW_HEIGHT = GetMonitorHeight(GetCurrentMonitor());
+
+    double conversion = 0;
+    set_conversion_factor(&conversion, AU_per_window, WINDOW_WIDTH, WINDOW_HEIGHT);
+    
     SetWindowState(FLAG_FULLSCREEN_MODE);
     SetTargetFPS(165);
+    
     while (!WindowShouldClose())
     {
         for(int i=0; i<steps_per_frame && !paused; i++){
@@ -82,13 +88,13 @@ void graphics_version(){
         }
 
         if(m_IsKeyPressed(KEY_UP)){
-            AU_PER_WINDOW /= 1.2;
-            set_conversion_factor(&conversion, AU_PER_WINDOW, WINDOW_WIDTH, WINDOW_HEIGHT);
+            AU_per_window /= 1.2;
+            set_conversion_factor(&conversion, AU_per_window, WINDOW_WIDTH, WINDOW_HEIGHT);
         }
         if(m_IsKeyPressed(KEY_DOWN)){
-            AU_PER_WINDOW *= 1.2;
-            printf("%f\n", AU_PER_WINDOW);
-            set_conversion_factor(&conversion, AU_PER_WINDOW, WINDOW_WIDTH, WINDOW_HEIGHT);
+            AU_per_window *= 1.2;
+            printf("%f\n", AU_per_window);
+            set_conversion_factor(&conversion, AU_per_window, WINDOW_WIDTH, WINDOW_HEIGHT);
         }
 
         if(m_IsKeyPressed(KEY_RIGHT)){
