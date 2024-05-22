@@ -31,76 +31,111 @@ void quick_test_session(){
     print_bodies_relative(2, bodies);
 }
 
-void set_conversion_factor(double *conv, double AU_PER_WINDOW, int WINDOW_WIDTH, int WINDOW_HEIGHT)
+void set_conversion_factor(double *conv, double AU_per_window, int WINDOW_WIDTH, int WINDOW_HEIGHT)
 {
-    double SIMULATED_WINDOW_WIDTH = AU_PER_WINDOW * AU;
+    double SIMULATED_WINDOW_WIDTH = AU_per_window * AU;
     *conv = WINDOW_WIDTH / SIMULATED_WINDOW_WIDTH;
 }
 
-// Actual drawing code
+bool m_IsKeyPressed(int key) {
+    return IsKeyPressed(key) || IsKeyPressedRepeat(key);
+}
+
 void graphics_version(){
+    // int n=2;
+    // body bodies[] = {
+    //     { "earth", M_earth, {0, 0},  {0, 0} },
+    //     { "moon", M_moon, {lunar_distance, 0},  {0, 200.f} }
+    // };
+
+    // Bodies in the sim
     body *bodies = get_solar_system();
     size_t n = 15;
 
+    // Variables governing the sim
+    int steps_per_frame = 5;
+    double AU_per_window = 2.5f;
+    unsigned int selected_body = 0;
+    bool paused = false;
+    double elapsed_time = 0.f;
+
+    // Window initialization, rendering necessities
     int WINDOW_WIDTH = 1200;
     int WINDOW_HEIGHT = 800;
-
-    double AU_PER_WINDOW = 2.5f;
-    double conversion = 0;
-    set_conversion_factor(&conversion, AU_PER_WINDOW, WINDOW_WIDTH, WINDOW_HEIGHT);
-
-    int steps_per_frame = 500;
-    unsigned int selected_body = 0;
-
     InitWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "solar_c (2024)");
+    WINDOW_WIDTH = GetMonitorWidth(GetCurrentMonitor());
+    WINDOW_HEIGHT = GetMonitorHeight(GetCurrentMonitor());
+
+    double conversion = 0;
+    set_conversion_factor(&conversion, AU_per_window, WINDOW_WIDTH, WINDOW_HEIGHT);
+    
+    SetWindowState(FLAG_FULLSCREEN_MODE);
     SetTargetFPS(165);
+    
     while (!WindowShouldClose())
     {
-        for(int i=0; i<steps_per_frame; i++){
-            // Perform simulation step
-            do_step(n, bodies, 60.f);
+        for(int i=0; i<steps_per_frame && !paused; i++){
+            do_step(n, bodies, 60.0);
+            elapsed_time += 60.0;
         }
 
-        // Adjust simulation speed
-        if(IsKeyPressed(KEY_X)){
-            steps_per_frame *= 1.25f;
+        if(m_IsKeyPressed(KEY_X)){
+            steps_per_frame *= 1.25;
         }
-        if(IsKeyPressed(KEY_Z)){
-            steps_per_frame /= 1.25f;
-        }
-
-        // Adjust zoom level
-        if(IsKeyPressed(KEY_UP)){
-            AU_PER_WINDOW /= 1.2f;
-            set_conversion_factor(&conversion, AU_PER_WINDOW, WINDOW_WIDTH, WINDOW_HEIGHT);
-        }
-        if(IsKeyPressed(KEY_DOWN)){
-            AU_PER_WINDOW *= 1.2f;
-            set_conversion_factor(&conversion, AU_PER_WINDOW, WINDOW_WIDTH, WINDOW_HEIGHT);
+        if(m_IsKeyPressed(KEY_Z)){
+            steps_per_frame /= 1.25;
         }
 
-        // Select next/previous body
-        if(IsKeyPressed(KEY_RIGHT)){
+        if(m_IsKeyPressed(KEY_UP)){
+            AU_per_window /= 1.2;
+            set_conversion_factor(&conversion, AU_per_window, WINDOW_WIDTH, WINDOW_HEIGHT);
+        }
+        if(m_IsKeyPressed(KEY_DOWN)){
+            AU_per_window *= 1.2;
+            printf("%f\n", AU_per_window);
+            set_conversion_factor(&conversion, AU_per_window, WINDOW_WIDTH, WINDOW_HEIGHT);
+        }
+
+        if(m_IsKeyPressed(KEY_RIGHT)){
             selected_body = (selected_body + 1)  % n;
         }
-        if(IsKeyPressed(KEY_LEFT)){
+        if(m_IsKeyPressed(KEY_LEFT)){
             selected_body = (selected_body - 1)  % n;
         }
 
-        // Draw bodies
+        if(m_IsKeyPressed(KEY_SPACE)){
+            paused = !paused;
+        }
+
+        if(m_IsKeyPressed(KEY_ONE) && IsKeyDown(KEY_LEFT_CONTROL)) {
+            if (bodies[0].mass > 0){
+                bodies[0].mass = 0;
+            } else {
+                bodies[0].mass = M_sun;
+            }
+        }
+
         BeginDrawing();
             ClearBackground(BLACK);
 
             for (int i=0; i<n; i++) {
                 int x = WINDOW_WIDTH/2 + (bodies[i].pos - bodies[selected_body].pos )[0]*conversion;
                 int y = WINDOW_HEIGHT/2 + (bodies[i].pos - bodies[selected_body].pos )[1]*conversion;
-                DrawCircle(x, y, 3.f, RED);
+                
+                if (x > 0 && x < WINDOW_WIDTH && y > 0 && y<WINDOW_HEIGHT){
+                    DrawCircle(x, y, 3.f, bodies[i].color);
+                }
             }
             
-            // Display currently tracked body
+            // Draw tracked body
             char *cur_sel_text = malloc(256*sizeof(char));
             snprintf(cur_sel_text, 256, "Currently tracking: %s", bodies[selected_body].name);
             DrawText(cur_sel_text, 0, 30, 20, WHITE);
+
+            // Draw elapsed time
+            char *elapsed_time_text = malloc(256*sizeof(char));
+            snprintf(elapsed_time_text, 256, "Elapsed time (days): %08.5e", elapsed_time / (60.0*24.0));
+            DrawText(elapsed_time_text, 0, 60, 20, WHITE);
 
             DrawFPS(10, 10);
         EndDrawing();

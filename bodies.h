@@ -5,6 +5,7 @@
 body solar_system[] = {
     { // Sun
         .name = "Sun",
+        .color = YELLOW,
         .mass = M_sun,
         .pos = {0, 0},
         .vel = {0, 0}
@@ -12,84 +13,98 @@ body solar_system[] = {
     }, 
     { // Earth
         .name = "Earth",
+        .color = BLUE,
         .mass = M_earth,
         .pos = {AU, 0},
         .vel = {0, 0}
     },
     { // Moon
         .name = "Moon",
+        .color = GRAY,
         .mass = M_moon,
-        .pos = {lunar_distance, AU},
-        .vel = {AU, 1022}
+        .pos = {AU, lunar_distance},
+        .vel = {0, 0}
     },
     { // Mercury
         .name = "Mercury",
+        .color = RED,
         .mass = 0.55 * M_earth,
         .pos = {0.39 * AU, 0},
         .vel = {0, 0}
     },
     { // Venus
         .name = "Venus",
+        .color = ORANGE,
         .mass = 0.815 * M_earth,
         .pos = {0.72 * AU, 0},
         .vel = {0, 0}
     },
     { // Mars
         .name = "Mars",
+        .color = MAROON,
         .mass = 0.107 * M_earth,
         .pos = {1.52 * AU, 0},
         .vel = {0, 0}
     },
     { // Jupiter
         .name = "Jupiter",
+        .color = BEIGE,
         .mass = 317.8 * M_earth,
         .pos = {5.20 * AU, 0},
         .vel = {0, 0}
     },
     { // Io
         .name = "Io",
+        .color = GREEN,
         .mass = 0.015 * M_earth,
         .pos = {5.20 * AU, 0.0028 * AU},
         .vel = {0, 0}
     },
     { // Europa
         .name = "Europa",
+        .color = PURPLE,
         .mass = 0.008 * M_earth,
         .pos = {5.20 * AU, 0.0045 * AU},
         .vel = {0, 0}
     },
     { // Ganymede
         .name = "Ganymede",
+        .color = VIOLET,
         .mass = 0.025 * M_earth,
         .pos = {5.20 * AU, 0.0071 * AU},
         .vel = {0, 0}
     },
     { // Callisto
         .name = "Callisto",
+        .color = PINK,
         .mass = 0.018 * M_earth,
         .pos = {5.20 * AU, 0.0126 * AU},
         .vel = {0, 0}
     },
     { // Saturn
         .name = "Saturn",
+        .color = MAGENTA,
         .mass = 95.2 * M_earth,
         .pos = {9.58 * AU, 0},
         .vel = {0, 0}
     },
     { // Uranus
         .name = "Uranus",
+        .color = SKYBLUE,
         .mass = 14.5 * M_earth,
         .pos = {19.22 * AU, 0},
         .vel = {0, 0}
     },
     { // Neptune
         .name = "Neptune",
+        .color = DARKBLUE,
         .mass = 17.1 * M_earth,
         .pos = {30.05 * AU, 0},
         .vel = {0, 0}
     },
     { // Pluto
         .name = "Pluto",
+        .color = RED,
         .mass = 0.00218 * M_earth,
         .pos = {39.48 * AU, 0},
         .vel = {0, 0}
@@ -122,6 +137,18 @@ body *get_solar_system () {
     solar_system[2].vel[0] = -get_orbital_speed(
         M_earth, solar_system[2].pos[1]
     );
+
+    FILE *fprandom = fopen("/dev/urandom", "rb");
+    short randint;
+    for (int i=1; i<n; i++) {
+        fread(&randint, sizeof(randint), 1, fprandom);
+
+        double normalized_value = randint / pow(2, 8*sizeof(randint)) / 20 + 1;
+
+        solar_system[i].vel *= normalized_value;
+        printf("%d\n", randint);
+    }
+    fclose(fprandom);
 
     return solar_system;
 }
