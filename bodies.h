@@ -128,13 +128,13 @@ body *get_solar_system () {
 
     // Speed of moons around Jupiter
     for (int i=7; i<=10; i++) {
-        solar_system[i].vel[0] = -get_orbital_speed(
+        solar_system[i].vel[0] = get_orbital_speed(
             M_jupiter, solar_system[i].pos[1]
         );
     }
 
     // Speed of moon around Earth
-    solar_system[2].vel[0] = -get_orbital_speed(
+    solar_system[2].vel[0] = get_orbital_speed(
         M_earth, solar_system[2].pos[1]
     );
 
