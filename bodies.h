@@ -134,9 +134,10 @@ body *get_solar_system () {
     }
 
     // Speed of moon around Earth
-    solar_system[2].vel[0] = get_orbital_speed(
+    solar_system[2].vel[0] = -get_orbital_speed(
         M_earth, solar_system[2].pos[1]
     );
+
 
     FILE *fprandom = fopen("/dev/urandom", "rb");
     short randint;

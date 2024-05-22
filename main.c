@@ -42,11 +42,6 @@ bool m_IsKeyPressed(int key) {
 }
 
 void graphics_version(){
-    // int n=2;
-    // body bodies[] = {
-    //     { "earth", M_earth, {0, 0},  {0, 0} },
-    //     { "moon", M_moon, {lunar_distance, 0},  {0, 200.f} }
-    // };
 
     // Bodies in the sim
     body *bodies = get_solar_system();
@@ -54,6 +49,7 @@ void graphics_version(){
 
     // Variables governing the sim
     int steps_per_frame = 5;
+    int dt = 60;
     double AU_per_window = 2.5f;
     unsigned int selected_body = 0;
     bool paused = false;
@@ -75,8 +71,8 @@ void graphics_version(){
     while (!WindowShouldClose())
     {
         for(int i=0; i<steps_per_frame && !paused; i++){
-            do_step(n, bodies, 60.0);
-            elapsed_time += 60.0;
+            do_step(n, bodies, dt);
+            elapsed_time += dt;
         }
 
         if(m_IsKeyPressed(KEY_X)){
@@ -105,6 +101,10 @@ void graphics_version(){
 
         if(m_IsKeyPressed(KEY_SPACE)){
             paused = !paused;
+        }
+
+        if(m_IsKeyPressed(KEY_T)){
+            dt *= -1;
         }
 
         if(m_IsKeyPressed(KEY_ONE) && IsKeyDown(KEY_LEFT_CONTROL)) {
