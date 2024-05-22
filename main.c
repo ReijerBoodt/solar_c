@@ -1,15 +1,14 @@
 #include "main.h"
 #include "bodies.h"
-// #include ""
 
 void quick_test_session(){
+    // Define an array of bodies
     body bodies[] = {
         { "earth", M_earth, {0, 0},  {0, 0} },
         { "moon", M_moon, {lunar_distance, 0},  {0, 1022} }
     };
 
-    // body *bodies = get_solar_system();
-
+    // Print initial state of bodies
     puts("Before:");
     printf("The distance squared is: %g\n",
         pow(dist_cubed(bodies[0].pos, bodies[1].pos), 2.f/3.f)
@@ -19,11 +18,11 @@ void quick_test_session(){
     int day = 60*60*24;
     int n_days = 14;
     for(int i=0;i<day*n_days;i++){
+        // Perform simulation step
         do_step(2, bodies, 1.f);
-        // if (i%day == 0){
-        //     print_bodies(2, bodies);
-        // }
     }
+
+    // Print final state of bodies
     printf("\nAfter %d days:\n", n_days);
     printf("The distance squared is: %g\n",
         pow(dist_cubed(bodies[0].pos, bodies[1].pos), 2.f/3.f)
@@ -38,15 +37,10 @@ void set_conversion_factor(double *conv, double AU_PER_WINDOW, int WINDOW_WIDTH,
     *conv = WINDOW_WIDTH / SIMULATED_WINDOW_WIDTH;
 }
 
+// Actual drawing code
 void graphics_version(){
-    // int n=2;
-    // body bodies[] = {
-    //     { "earth", M_earth, {0, 0},  {0, 0} },
-    //     { "moon", M_moon, {lunar_distance, 0},  {0, 200.f} }
-    // };
     body *bodies = get_solar_system();
     size_t n = 15;
-
 
     int WINDOW_WIDTH = 1200;
     int WINDOW_HEIGHT = 800;
@@ -63,9 +57,11 @@ void graphics_version(){
     while (!WindowShouldClose())
     {
         for(int i=0; i<steps_per_frame; i++){
+            // Perform simulation step
             do_step(n, bodies, 60.f);
         }
 
+        // Adjust simulation speed
         if(IsKeyPressed(KEY_X)){
             steps_per_frame *= 1.25f;
         }
@@ -73,16 +69,17 @@ void graphics_version(){
             steps_per_frame /= 1.25f;
         }
 
+        // Adjust zoom level
         if(IsKeyPressed(KEY_UP)){
             AU_PER_WINDOW /= 1.2f;
             set_conversion_factor(&conversion, AU_PER_WINDOW, WINDOW_WIDTH, WINDOW_HEIGHT);
         }
         if(IsKeyPressed(KEY_DOWN)){
             AU_PER_WINDOW *= 1.2f;
-            printf("%f\n", AU_PER_WINDOW);
             set_conversion_factor(&conversion, AU_PER_WINDOW, WINDOW_WIDTH, WINDOW_HEIGHT);
         }
 
+        // Select next/previous body
         if(IsKeyPressed(KEY_RIGHT)){
             selected_body = (selected_body + 1)  % n;
         }
@@ -90,9 +87,9 @@ void graphics_version(){
             selected_body = (selected_body - 1)  % n;
         }
 
+        // Draw bodies
         BeginDrawing();
             ClearBackground(BLACK);
-            // DrawText("Congrats! You created your first window!", 190, 200, 20, LIGHTGRAY);
 
             for (int i=0; i<n; i++) {
                 int x = WINDOW_WIDTH/2 + (bodies[i].pos - bodies[selected_body].pos )[0]*conversion;
@@ -100,6 +97,7 @@ void graphics_version(){
                 DrawCircle(x, y, 3.f, RED);
             }
             
+            // Display currently tracked body
             char *cur_sel_text = malloc(256*sizeof(char));
             snprintf(cur_sel_text, 256, "Currently tracking: %s", bodies[selected_body].name);
             DrawText(cur_sel_text, 0, 30, 20, WHITE);
