@@ -59,13 +59,13 @@ void graphics_version(){
     int WINDOW_WIDTH = 1200;
     int WINDOW_HEIGHT = 800;
     InitWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "solar_c (2024)");
+    SetWindowState(FLAG_FULLSCREEN_MODE);
     WINDOW_WIDTH = GetMonitorWidth(GetCurrentMonitor());
     WINDOW_HEIGHT = GetMonitorHeight(GetCurrentMonitor());
 
     double conversion = 0;
     set_conversion_factor(&conversion, AU_per_window, WINDOW_WIDTH, WINDOW_HEIGHT);
     
-    SetWindowState(FLAG_FULLSCREEN_MODE);
     SetTargetFPS(165);
     
     while (!WindowShouldClose())
